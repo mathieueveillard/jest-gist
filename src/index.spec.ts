@@ -1,12 +1,11 @@
-// @ts-ignore see https://github.com/jest-community/jest-extended#setup
-import * as matchers from "jest-extended";
+import { test, run } from ".";
 
-expect.extend(matchers);
-
-test("That's a test!", () => {
-  expect(1 + 1).toEqual(2);
+test("Test #1", (expect) => {
+  expect(true, true);
 });
 
-test("jest-extended is included", () => {
-  expect([1, 0]).toIncludeSameMembers([0, 1]);
+test("Test #2", (expect) => {
+  expect(false, true);
 });
+
+run();
