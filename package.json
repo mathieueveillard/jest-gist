@@ -1,13 +1,14 @@
 {
   "name": "jest-gist",
   "version": "1.0.0",
-  "description": "Starter project for kata (Node, TypeScript, Jest)",
+  "description": "The foundations of a functional-oriented test framework",
   "main": "index.js",
   "scripts": {
     "test": "ts-node src/index.spec.ts",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "devDependencies": {
+    "chalk": "4.1.2",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"

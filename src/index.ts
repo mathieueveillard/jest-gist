@@ -1,31 +1,59 @@
-type Expect = (actual: boolean, expected: boolean) => void;
+import { Result, createError } from "./result";
+import { Test } from "./test";
 
-type TestCase = (expect: Expect) => void;
-
-type Test = {
+type ExecutionResult<T> = {
   slug: string;
-  testCase: TestCase;
+  result: Result<T>;
 };
 
-const tests: Test[] = [];
+const selectTestsToRun = (tests: Test<any>[]): Test<any>[] => {
+  const testsWithoutSkipFlag = tests.filter(({ modulator }) => modulator !== "SKIP");
 
-export const test = (slug: string, testCase: TestCase): void => {
-  tests.push({
-    slug,
-    testCase,
-  });
+  const testsWithOnlyFlag = testsWithoutSkipFlag.filter(({ modulator }) => modulator === "ONLY");
+
+  if (testsWithOnlyFlag.length > 0) {
+    return testsWithOnlyFlag;
+  }
+
+  return testsWithoutSkipFlag;
 };
 
-export const run = () => {
-  tests.forEach(({ slug, testCase }) => {
-    let status;
-    const expect: Expect = (actual, expected) => {
-      status = actual === expected;
-    };
-    testCase(expect);
-    console.log({
+const run = <T>({ slug, scenario }: Test<T>): ExecutionResult<T> => {
+  try {
+    const result = scenario();
+    return {
       slug,
-      status,
-    });
-  });
+      result,
+    };
+  } catch (error) {
+    return {
+      slug,
+      result: createError(error),
+    };
+  }
 };
+
+const displayTest = <T>({ slug, result }: ExecutionResult<T>): void => {
+  console.log(result.display(slug));
+};
+
+const displayTestSuite = (slug: string, callback: () => void): void => {
+  console.log(`-- TEST SUITE: ${slug}`);
+  callback();
+  console.log("\n");
+};
+
+const runTestSuite = (slug: string, tests: Test<any>[]) => {
+  const results = selectTestsToRun(tests).map(run);
+
+  displayTestSuite(slug, () => {
+    results.forEach(displayTest);
+  });
+
+  const testSuiteHasFailed = results.some(({ result }) => result.type !== "SUCCESS");
+  if (testSuiteHasFailed) {
+    process.exit(1);
+  }
+};
+
+export default runTestSuite;
