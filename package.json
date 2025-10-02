@@ -4,11 +4,12 @@
   "description": "The foundations of a functional-oriented test framework",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node src/index.spec.ts",
+    "test": "ts-node src/testrunner.spec.ts",
+    "demo": "ts-node src/demo.spec.ts",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "devDependencies": {
-    "chalk": "4.1.2",
+    "chalk": "^5.6.2",
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
